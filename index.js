@@ -19,7 +19,9 @@ app.use(
 
 
 const authroutes = require('./routes/V3/Authroute');
+const adminEvent=require("./routes/Admin/EventRoute")
 app.use('/v3/auth/', authroutes);
+app.use('/admin/eventCat/', adminEvent);
 
 const mongoDB = process.env.MONGODB_URL;
 
