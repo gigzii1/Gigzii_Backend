@@ -2,14 +2,17 @@ const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true},
   mobile:{type:Number,require:true},
   role: { type: String, enum: ['user', 'artist', 'admin'], default: 'user' },
-  portfolio: { type: String }, // Only for artists
+  portfolio: { type: String },
   Address: { type: String }, 
-  pricing: { type: Number }, // Only for artists
-//   availability: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Availability' }], // Only for artists
-  permissions: { type: Array }, // Only for admins
+  pricing: { type: Number },
+  permissions: { type: Array }, 
+  adharfront:{type:String},
+  adharback:{type:String},
+  isVerified:{type:Boolean},
+  eventcategories:{type:Array}
 });
 
 module.exports = mongoose.model('User', UserSchema);
