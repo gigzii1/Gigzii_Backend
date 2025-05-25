@@ -41,15 +41,15 @@ const signupUser = async (req, res) => {
   }
 
   const token = jwt.sign(
-    { userId: user._id, role: user.role },
-    process.env.JWT_KEY,
-    { expiresIn: '1h' }
+    { userId: user._id, role: user.role,userdata:user },
+    process.env.JWT_KEY
   );
 
   res.status(200).json({
     status: true,
     message: 'Login successful',
     token,
+    user
   });
 };
 
@@ -83,14 +83,15 @@ const sendOTP = async (req, res) => {
 };
 
 
-  const verifyOtp = async (otp, email) => {
-    const existOtp = await OtpModel.find({ email })
-    if (!existOtp) return false;
-  
-    console.log("Stored OTP:", existOtp.otp, "Given OTP:", otp);
-    return existOtp.otp == otp;
-  };
-  
+ const verifyOtp = async (otp, email) => {
+  const existOtp = await OtpModel.findOne({ email }).sort({ createdAt: -1 }); 
+
+  if (!existOtp) return false;
+
+  console.log("Stored OTP:", existOtp.otp, "Given OTP:", otp);
+  return existOtp.otp === otp;
+};
+
 
   const artistSignup=async(req,res)=>{
      const{name,email,phone,address,adharfront,adharback,eventcategories}=req.body;
@@ -104,4 +105,43 @@ const sendOTP = async (req, res) => {
 
   }
 
-  module.exports = { signupUser,sendOTP,login,artistSignup };
+
+ const artistLogin = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+     console.log("yash",otp,email)
+    const Artist = await Usermodel.findOne({ email }); 
+
+    if (!Artist) {
+      return res.status(404).json({ error: 'Email not registered' });
+    }
+
+    if (Artist.isVerified === false) {
+      return res.status(403).json({ error: 'Verification under process' });
+    }
+
+    const isValid = await verifyOtp(otp, email); 
+
+    if (!isValid) {
+      return res.status(401).json({ error: 'Invalid OTP' });
+    }
+
+    const token = jwt.sign(
+      { userId: Artist._id, role: Artist.role },
+      process.env.JWT_KEY,
+      { expiresIn: '7d' }
+    );
+
+    return res.status(200).json({
+      status: true,
+      message: 'Login successful',
+      token,
+    });
+
+  } catch (error) {
+    console.error('Login error:', error);
+    return res.status(500).json({ error: 'Server error' });
+  }
+};
+
+  module.exports = { signupUser,sendOTP,login,artistSignup,artistLogin };

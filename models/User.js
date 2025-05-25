@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
   adharfront:{type:String},
   adharback:{type:String},
   isVerified:{type:Boolean},
-  eventcategories:{type:Array}
+   eventcategories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Eventcategory" }],
 });
 
 module.exports = mongoose.model('User', UserSchema);
