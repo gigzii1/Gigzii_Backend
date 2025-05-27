@@ -6,7 +6,7 @@ const dotenv = require("dotenv");
 const User = require('../../models/User');
 
 const signupUser = async (req, res) => {
-    const { name, email, mobile, otp } = req.body;
+    const { name, email, mobile, otp,city } = req.body;
 
     if (!name || !email || !mobile || !otp)
       return res.status(400).json({ error: 'All fields are required' });
@@ -14,7 +14,7 @@ const signupUser = async (req, res) => {
     const isValid = await verifyOtp(otp, email);
     if (!isValid) return res.status(400).json({ error: 'Invalid OTP' });
   
-    const user = new Usermodel({ name, email, mobile, role: 'user' });
+    const user = new Usermodel({ name, email, mobile, role: 'user',city });
     await user.save();
     const token = jwt.sign(
              { userId: user._id, userData: user.role },
@@ -27,31 +27,7 @@ const signupUser = async (req, res) => {
   };
 
 
-  const login = async (req, res) => {
-  const { email, otp } = req.body;
 
-  const isValid = await verifyOtp(otp, email);
-  if (!isValid) {
-    return res.status(401).json({ error: 'Invalid OTP' });
-  }
-
-  const user = await Usermodel.findOne({ email });
-  if (!user) {
-    return res.status(404).json({ error: 'User does not exist' });
-  }
-
-  const token = jwt.sign(
-    { userId: user._id, role: user.role,userdata:user },
-    process.env.JWT_KEY
-  );
-
-  res.status(200).json({
-    status: true,
-    message: 'Login successful',
-    token,
-    user
-  });
-};
 
 const sendOTP = async (req, res) => {
   try {
@@ -82,24 +58,60 @@ const sendOTP = async (req, res) => {
   }
 };
 
+ const login = async (req, res) => {
+  const { email, otp } = req.body;
 
- const verifyOtp = async (otp, email) => {
-  const existOtp = await OtpModel.findOne({ email }).sort({ createdAt: -1 }); 
+  const isValid = await verifyOtp(otp, email);
+  if (!isValid) {
+    return res.status(401).json({ error: 'Invalid or expired OTP' });
+  }
 
-  if (!existOtp) return false;
+  const user = await Usermodel.findOne({ email });
+  if (!user) {
+    return res.status(404).json({ error: 'User does not exist' });
+  }
 
-  console.log("Stored OTP:", existOtp.otp, "Given OTP:", otp);
-  return existOtp.otp === otp;
+  const token = jwt.sign(
+    { userId: user._id, role: user.role, userdata: user },
+    process.env.JWT_KEY,
+    { expiresIn: '7d' }
+  );
+
+  await OtpModel.deleteMany({ email });
+
+  res.status(200).json({
+    status: true,
+    message: 'Login successful',
+    token,
+    user
+  });
+};
+
+const verifyOtp = async (otp, email) => {
+  const existOtp = await OtpModel.findOne({ email }).sort({ createdAt: -1 });
+
+  if (!existOtp) {
+    console.log("No OTP found for", email);
+    return false;
+  }
+
+  const storedOtp = String(existOtp.otp).trim();
+  const givenOtp = String(otp).trim();
+  const isMatch = storedOtp === givenOtp;
+
+  console.log("Stored OTP:", storedOtp, "| Given OTP:", givenOtp, "| Match:", isMatch);
+  
+  return isMatch;
 };
 
 
   const artistSignup=async(req,res)=>{
-     const{name,email,phone,address,adharfront,adharback,eventcategories}=req.body;
+     const{name,email,phone,address,adharfront,adharback,eventcategories,city}=req.body;
     const isUser=await Usermodel.findOne({phone});
     if(isUser){
       res.status(500).json({ error: 'Artist already registred' });
     }
-    const Artist=new Usermodel({name:name,email:email,mobile:phone,role:"artist",address:address,adharfront:adharfront,adharback:adharback,isVerified:0,eventcategories})
+    const Artist=new Usermodel({name:name,email:email,mobile:phone,role:"artist",address:address,adharfront:adharfront,adharback:adharback,isVerified:0,eventcategories,city})
     await Artist.save();
     res.status(201).json({status:true, message: 'Artist Signup successfully' });
 
