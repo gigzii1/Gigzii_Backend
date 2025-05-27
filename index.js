@@ -21,9 +21,14 @@ app.use(
 const authroutes = require('./routes/V3/Authroute');
 const adminEvent=require("./routes/Admin/EventRoute")
 const adminUsers=require("./routes/Admin/UserRoute")
+const booking=require("./routes/Client/bookingRoute")
+const Artistslots=require("./routes/Artist/slotsRoutes")
+
 app.use('/v3/auth/', authroutes);
 app.use('/admin/eventCat/', adminEvent);
 app.use('/admin/users/', adminUsers);
+app.use('/client/booking/', booking);
+app.use('/artist/addSlots/', Artistslots);
 
 const mongoDB = process.env.MONGODB_URL;
 

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  email: { type: String, required: true},
+  email: { type: String, required: true,unique:true},
   mobile:{type:Number,require:true},
   role: { type: String, enum: ['user', 'artist', 'admin'], default: 'user' },
   portfolio: { type: String },
@@ -12,7 +12,9 @@ const UserSchema = new mongoose.Schema({
   adharfront:{type:String},
   adharback:{type:String},
   isVerified:{type:Boolean},
-   eventcategories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Eventcategory" }],
+  city:{type:String},
+  bio:{type:String},
+  eventcategories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Eventcategory" }],
 });
 
 module.exports = mongoose.model('User', UserSchema);
