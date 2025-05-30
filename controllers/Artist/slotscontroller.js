@@ -12,6 +12,10 @@ const toggleSlot = async (req, res) => {
     const existingSlot = await Slots.findOne({ artistId, Date });
 
     if (existingSlot) {
+      if(existingSlot.isBooked){
+      return res.status(400).json({ message: "You cannot remove  booked slot" });
+
+      }
       await Slots.findByIdAndDelete(existingSlot._id);
       return res.status(200).json({ message: "Slot removed" });
     } else {
