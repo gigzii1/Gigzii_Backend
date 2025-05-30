@@ -20,10 +20,6 @@ const SlotSchema = new mongoose.Schema(
       ref: 'User',
       default: null,
     },
-    priceSlot: {
-      type: Number,
-      required: true,
-    },
   },
   {
     timestamps: true, 

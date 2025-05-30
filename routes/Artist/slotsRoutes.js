@@ -1,10 +1,10 @@
 
 const express = require("express");
-const { addSlots } = require("../../controllers/Artist/slotscontroller");
+const { addSlots, toggleSlot } = require("../../controllers/Artist/slotscontroller");
 const { verifyToken } = require("../../utils/Auith");
 
 const router = express.Router();
 
-router.post("/addSlots",verifyToken, addSlots);
+router.post("/toggleSlot",verifyToken, toggleSlot);
 
 module.exports = router;
