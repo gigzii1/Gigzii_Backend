@@ -32,9 +32,14 @@ const initiate=async(req,res)=>{
 
 }
 
-const verifyPayment=async(req,res)=>{
+const verifyPayment = async (req, res) => {
   const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
-  console.log("ddd",razorpay_payment_id, razorpay_order_id, razorpay_signature)
+  console.log("Razorpay values received:", razorpay_payment_id, razorpay_order_id, razorpay_signature);
+
+  if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
+    return res.status(400).json({ error: "Missing Razorpay parameters" });
+  }
+
   const generatedSignature = crypto
     .createHmac("sha256", process.env.Razorpay_key_secret)
     .update(`${razorpay_order_id}|${razorpay_payment_id}`)
@@ -53,8 +58,7 @@ const verifyPayment=async(req,res)=>{
   } else {
     res.status(400).json({ error: "Invalid signature" });
   }
-
-}
+};
 
 const getOrderDetails=async(req,res)=>{
     console.log("yash")
