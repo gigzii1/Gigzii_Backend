@@ -6,25 +6,28 @@ const mongoose =require('mongoose');
 
 
 dotenv.config();
-app.use(express.json({ limit: '100mb' }));
-app.use(express.urlencoded({ limit: '100mb', extended: true }));
+
 const allowedOrigins = [
-  "http://localhost:3000",
-  "https://gigzi.in"
+  "http://localhost:3000", // for web dev
+  "http://localhost:5173", // for Vite or React dev
+  "https://gigzi.in",      // your live frontend
+  "exp://*",               // for React Native if using Expo Go
+  "http://192.168.*.*",    // optional for LAN React Native
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow if origin is in list OR if there's no origin (e.g., React Native)
-    if (!origin || allowedOrigins.includes(origin)) {
-      return callback(null, true);
+    if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
+      callback(null, true);
     } else {
-      return callback(new Error("CORS not allowed"));
+      callback(new Error("CORS not allowed"));
     }
   },
   credentials: true
 }));
 
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 const authroutes = require('./routes/V3/Authroute');
 const adminEvent=require("./routes/Admin/EventRoute")
 const adminUsers=require("./routes/Admin/UserRoute")
@@ -48,7 +51,7 @@ mongoose.connect(mongoDB)
   .catch((error) => {
     console.error('Error connecting to MongoDB:', error);
   });
-
+  
 
 
 const PORT = process.env.PORT || 5000;
