@@ -8,15 +8,22 @@ const mongoose =require('mongoose');
 dotenv.config();
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
-app.use(
-  cors({
-    origin: "*",
-    methods: ["POST", "GET"],
-    credentials: true,
-    optionSuccessStatus: 200,
-  })
-);
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://gigzi.in"
+];
 
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow if origin is in list OR if there's no origin (e.g., React Native)
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("CORS not allowed"));
+    }
+  },
+  credentials: true
+}));
 
 const authroutes = require('./routes/V3/Authroute');
 const adminEvent=require("./routes/Admin/EventRoute")
