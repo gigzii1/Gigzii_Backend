@@ -8,11 +8,12 @@ const mongoose =require('mongoose');
 dotenv.config();
 
 const allowedOrigins = [
-  "http://localhost:3000", // for web dev
-  "http://localhost:5173", // for Vite or React dev
-  "https://gigzi.in",      // your live frontend
-  "exp://*",               // for React Native if using Expo Go
-  "http://192.168.*.*",    // optional for LAN React Native
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://www.gigzi.in", // full live domain
+  "https://gigzi.in",     // add naked domain too
+  "exp://",               // if using Expo Go
+  "http://192.168"        // LAN IPs
 ];
 
 app.use(cors({
@@ -20,11 +21,16 @@ app.use(cors({
     if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
       callback(null, true);
     } else {
-      callback(new Error("CORS not allowed"));
+      callback(new Error("CORS not allowed for origin: " + origin));
     }
   },
-  credentials: true
+  credentials: true,
 }));
+
+app.use((req, res, next) => {
+  console.log("Request Origin:", req.headers.origin);
+  next();
+});
 
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
