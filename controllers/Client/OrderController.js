@@ -55,6 +55,7 @@ const verifyOrder=async(req,res)=>{
 }
 
 const getOrderDetails=async(req,res)=>{
+    console.log("yash")
     const{id}=req.params;
     const order=await OrderModel.findOne({razorpayOrderId:id});
     res.json({ success: true,order });
