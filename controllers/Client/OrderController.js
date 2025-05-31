@@ -1,5 +1,6 @@
 const Razorpay = require('razorpay');
 const OrderModel = require('../../models/OrderModel');
+const crypto = require("crypto");
 
 const razorpay = new Razorpay({
   key_id: process.env.Razorpay_key_id,
@@ -31,10 +32,11 @@ const initiate=async(req,res)=>{
 
 }
 
-const verifyOrder=async(req,res)=>{
+const verifyPayment=async(req,res)=>{
   const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
+  console.log("ddd",razorpay_payment_id, razorpay_order_id, razorpay_signature)
   const generatedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_SECRET)
+    .createHmac("sha256", process.env.Razorpay_key_secret)
     .update(`${razorpay_order_id}|${razorpay_payment_id}`)
     .digest("hex");
 
@@ -61,4 +63,4 @@ const getOrderDetails=async(req,res)=>{
     res.json({ success: true,order });
 
 }
-module.exports={initiate,verifyOrder,getOrderDetails}
+module.exports={initiate,verifyPayment,getOrderDetails}

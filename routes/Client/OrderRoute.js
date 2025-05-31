@@ -1,11 +1,11 @@
 const express =require("express");
-const { initiate, verifyOrder, getOrderDetails } = require("../../controllers/Client/OrderController");
+const { initiate, getOrderDetails, verifyPayment } = require("../../controllers/Client/OrderController");
 const { verifyToken } = require("../../utils/Auith");
 
 const router=express.Router();
 
 router.post("/initiate",verifyToken, initiate)
-router.post("/verifyOrder", verifyOrder)
+router.post("/verifyPayment", verifyPayment)
 router.get("/getOrderDetails/:id", getOrderDetails)
 
 module.exports=router;
