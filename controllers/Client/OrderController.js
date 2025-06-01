@@ -67,4 +67,34 @@ const getOrderDetails=async(req,res)=>{
     res.json({ success: true,order });
 
 }
-module.exports={initiate,verifyPayment,getOrderDetails}
+
+const getUserOrders = async (req, res) => {
+  try {
+    const  userId  = req.user.userId;
+
+    const orders = await OrderModel.find({
+      userId: userId,
+      paymentStatus: "paid"
+    })
+    .sort({ createdAt: -1 }).populate('artistId').populate('slotId');
+
+    res.status(200).json({
+      success: true,
+      message: "Orders fetched successfully",
+      count: orders.length,
+      data: orders
+    });
+
+  } catch (error) {
+    console.error("Error fetching user orders:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server Error. Could not fetch orders."
+    });
+  }
+};
+
+ 
+
+
+module.exports={initiate,verifyPayment,getOrderDetails,getUserOrders}
