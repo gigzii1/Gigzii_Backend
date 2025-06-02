@@ -1,12 +1,14 @@
-const Slots = require('../../models/Slots');
-const Usermodel=require('../../models/User');
- const mongoose = require('mongoose');
- 
+const Slots = require("../../models/Slots");
+const Usermodel = require("../../models/User");
+const mongoose = require("mongoose");
+
 const getArtists = async (req, res) => {
   try {
     const { city, category } = req.query;
     if (!city || !category) {
-      return res.status(400).json({ message: "City and category are required." });
+      return res
+        .status(400)
+        .json({ message: "City and category are required." });
     }
 
     if (!mongoose.Types.ObjectId.isValid(category)) {
@@ -16,8 +18,8 @@ const getArtists = async (req, res) => {
     const artists = await Usermodel.find({
       city: city,
       eventcategories: category,
-      isVerified:true
-    }).populate("eventcategories"); 
+      isVerified: true,
+    }).populate("eventcategories");
 
     return res.status(200).json(artists);
   } catch (error) {
@@ -26,12 +28,11 @@ const getArtists = async (req, res) => {
   }
 };
 
-
 const getArtistById = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
 
-    const artist = await Usermodel.findById(id).populate('eventcategories');
+    const artist = await Usermodel.findById(id).populate("eventcategories");
 
     if (!artist) {
       return res.status(404).json({ message: "Artist not found" });
@@ -48,7 +49,9 @@ const getArtistSlots = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const slots = await Slots.find({ artistId: id }).populate('artistId') .sort({ Date: 1 });;
+    const slots = await Slots.find({ artistId: id })
+      .populate("artistId")
+      .sort({ Date: 1 });
 
     return res.status(200).json(slots);
   } catch (error) {
@@ -56,17 +59,12 @@ const getArtistSlots = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-const getSlotById=async(req,res)=>{
+const getSlotById = async (req, res) => {
   try {
-    
-       const{id}=req.params;
-       const slot=await Slots.findById(id);
+    const { id } = req.params;
+    const slot = await Slots.findById(id);
     return res.status(200).json(slot);
+  } catch (error) {}
+};
 
-  } catch (error) {
-    
-  }
-}
-
-
-module.exports={getArtists,getArtistById,getArtistSlots,getSlotById}
+module.exports = { getArtists, getArtistById, getArtistSlots, getSlotById };

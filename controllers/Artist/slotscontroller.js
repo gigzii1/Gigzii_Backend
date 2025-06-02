@@ -12,18 +12,23 @@ const toggleSlot = async (req, res) => {
     const existingSlot = await Slots.findOne({ artistId, Date });
 
     if (existingSlot) {
-      if(existingSlot.isBooked){
-      return res.status(400).json({ message: "You cannot remove  booked slot" });
-
+      if (existingSlot.isBooked) {
+        return res
+          .status(400)
+          .json({ message: "You cannot remove  booked slot" });
       }
       await Slots.findByIdAndDelete(existingSlot._id);
       return res.status(200).json({ message: "Slot removed" });
     } else {
       const newSlot = new Slots({ artistId, Date });
       const savedSlot = await newSlot.save();
-      const populatedSlot = await Slots.findById(savedSlot._id).populate("artistId");
+      const populatedSlot = await Slots.findById(savedSlot._id).populate(
+        "artistId"
+      );
 
-      return res.status(201).json({ message: "Slot created", slot: populatedSlot });
+      return res
+        .status(201)
+        .json({ message: "Slot created", slot: populatedSlot });
     }
   } catch (error) {
     console.error("Error toggling slot:", error);
@@ -31,4 +36,4 @@ const toggleSlot = async (req, res) => {
   }
 };
 
-module.exports = {toggleSlot};
+module.exports = { toggleSlot };

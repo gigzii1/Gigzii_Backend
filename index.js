@@ -36,6 +36,7 @@ const adminUsers=require("./routes/Admin/UserRoute")
 const booking=require("./routes/Client/bookingRoute")
 const Artistslots=require("./routes/Artist/slotsRoutes")
 const order=require("./routes/Client/OrderRoute")
+const ArtistOrder=require("./routes/Artist/ArtistOrderRoute")
 
 app.use('/v3/auth/', authroutes);
 app.use('/admin/eventCat/', adminEvent);
@@ -43,6 +44,7 @@ app.use('/admin/users/', adminUsers);
 app.use('/client/booking/', booking);
 app.use('/artist/addSlots/', Artistslots);
 app.use('/client/order/', order);
+app.use('/artist/order/', ArtistOrder);
 
 const mongoDB = process.env.MONGODB_URL;
 
