@@ -6,7 +6,7 @@ const getMyorders = async (req, res) => {
     const orders = await OrderModel.find({ artistId: id })
       .sort({ createdAt: -1 })
       .populate("artistId")
-      .populate("slotId");
+      .populate("slotId").populate('userId');
     res.status(200).json({
       success: true,
       message: "Orders fetched successfully",
