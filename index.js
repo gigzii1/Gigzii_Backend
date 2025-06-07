@@ -30,9 +30,11 @@ app.use(cors({
 
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
+
 const authroutes = require('./routes/V3/Authroute');
 const adminEvent=require("./routes/Admin/EventRoute")
-const adminUsers=require("./routes/Admin/UserRoute")
+const adminArtist=require("./routes/Admin/ArtistRoute")
+const adminDashboard=require("./routes/Admin/DashBoardRoute")
 const booking=require("./routes/Client/bookingRoute")
 const Artistslots=require("./routes/Artist/slotsRoutes")
 const order=require("./routes/Client/OrderRoute")
@@ -40,7 +42,8 @@ const ArtistOrder=require("./routes/Artist/ArtistOrderRoute")
 
 app.use('/v3/auth/', authroutes);
 app.use('/admin/eventCat/', adminEvent);
-app.use('/admin/users/', adminUsers);
+app.use('/admin/artist/', adminArtist);
+app.use('/admin/dashBoard/', adminDashboard);
 app.use('/client/booking/', booking);
 app.use('/artist/addSlots/', Artistslots);
 app.use('/client/order/', order);

@@ -51,7 +51,7 @@ const sendOTP = async (req, res) => {
 
     await sendmail(email, `Your OTP for Gigzi is ${otp}`);
 
-    res.status(201).json({ status: true, message: 'OTP sent successfully' });
+    res.status(201).json({ status: true, message: 'OTP sent successfully',otp });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -156,4 +156,41 @@ const verifyOtp = async (otp, email) => {
   }
 };
 
-  module.exports = { signupUser,sendOTP,login,artistSignup,artistLogin };
+
+const AdminLogin = async (req, res) => {
+  try {
+    const { otp, email } = req.body;
+
+  
+    const isValid = await verifyOtp(otp, email);
+    if (!isValid) {
+      return res.status(401).json({ error: "Invalid OTP" });
+    }
+
+    const admin = await Usermodel.findOne({ email, role: "admin" });
+    if (!admin) {
+      return res.status(404).json({ error: "User does not exist or is not an admin" });
+    }
+
+    const token = jwt.sign(
+      { userId: admin._id, role: admin.role },
+      process.env.JWT_KEY,
+      { expiresIn: "7d" }
+    );
+
+    await OtpModel.deleteMany({ email });
+
+   
+    return res.status(200).json({
+      status: true,
+      message: "Login successful",
+      token,
+      admin, 
+    });
+  } catch (error) {
+    console.error("Admin login error:", error);
+    return res.status(500).json({ error: "Server error during login" });
+  }
+};
+
+  module.exports = { signupUser,sendOTP,login,artistSignup,artistLogin,AdminLogin };
