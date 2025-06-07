@@ -10,7 +10,8 @@ dotenv.config();
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
-  "https://www.gigzi.in", // full live domain
+  "https://www.gigzi.in",
+  "https://gigziadmin.netlify.app", // full live domain
   "https://gigzi.in",     // add naked domain too
   "exp://",               // if using Expo Go
   "http://192.168"        // LAN IPs
