@@ -1,90 +1,79 @@
-const Usermodel=require('../../models/User');
-const OtpModel = require("../../models/Otp")
-const sendmail=require("../../utils/mail")
+const Usermodel = require("../../models/User");
+const OtpModel = require("../../models/Otp");
+const sendmail = require("../../utils/mail");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const User = require('../../models/User');
-require('dotenv').config();
+const User = require("../../models/User");
+require("dotenv").config();
 
 const signupUser = async (req, res) => {
-    const { name, email, mobile, otp,city } = req.body;
+  const { name, email, mobile, otp, city } = req.body;
 
-    if (!name || !email || !mobile || !otp)
-      return res.status(400).json({ error: 'All fields are required' });
-   
-    const isValid = await verifyOtp(otp, email);
-    if (!isValid) return res.status(400).json({ error: 'Invalid OTP' });
-  
-    const user = new Usermodel({ name, email, mobile, role: 'user',city });
-    await user.save();
-    const token = jwt.sign(
-             { userId: user._id, userData: user.role },
-                           process.env.jwt_key,
-                { expiresIn: '1h' } 
-);
+  if (!name || !email || !mobile || !otp)
+    return res.status(400).json({ error: "All fields are required" });
 
-  
-    res.status(201).json({status:true, message: 'User Signup successfully',token });
-  };
+  const isValid = await verifyOtp(otp, email);
+  if (!isValid) return res.status(400).json({ error: "Invalid OTP" });
 
+  const user = new Usermodel({ name, email, mobile, role: "user", city });
+  await user.save();
+  const token = jwt.sign(
+    { userId: user._id, userData: user.role },
+    process.env.jwt_key,
+    { expiresIn: "1h" }
+  );
 
-
+  res
+    .status(201)
+    .json({ status: true, message: "User Signup successfully", token });
+};
 
 const sendOTP = async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
+    if (!email) return res.status(400).json({ error: "Email is required" });
 
-    const otp = Math.floor(100000 + Math.random() * 900000); 
-
-    const existingOtp = await OtpModel.findOne({ email });
-
-    if (existingOtp) {
-      existingOtp.otp = otp;
-      existingOtp.createdAt = new Date(); 
-      await existingOtp.save();
-    } else {
-      const otpRecord = new OtpModel({ email, otp });
-      await otpRecord.save();
-    }
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    const existingOtp = await OtpModel.findOneAndUpdate(
+      { email },
+      { otp, createdAt: new Date() },
+      { new: true, upsert: true }
+    );
 
     await sendmail(email, `Your OTP for Gigzi is ${otp}`);
-
-    res.status(201).json({ status: true, message: 'OTP sent successfully',otp });
+    res.status(201).json({ status: true, message: "OTP sent successfully" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("OTP Error:", err.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
- const login = async (req, res) => {
+const login = async (req, res) => {
   const { email, otp } = req.body;
 
   const isValid = await verifyOtp(otp, email);
   if (!isValid) {
-    return res.status(401).json({ error: 'Invalid or expired OTP' });
+    return res.status(401).json({ error: "Invalid or expired OTP" });
   }
 
   const user = await Usermodel.findOne({ email });
   if (!user) {
-    return res.status(404).json({ error: 'User does not exist' });
+    return res.status(404).json({ error: "User does not exist" });
   }
 
   const token = jwt.sign(
     { userId: user._id, role: user.role, userdata: user },
     process.env.JWT_KEY,
-    { expiresIn: '7d' }
+    { expiresIn: "7d" }
   );
 
   await OtpModel.deleteMany({ email });
 
   res.status(200).json({
     status: true,
-    message: 'Login successful',
+    message: "Login successful",
     token,
-    user
+    user,
   });
 };
 
@@ -100,69 +89,90 @@ const verifyOtp = async (otp, email) => {
   const givenOtp = String(otp).trim();
   const isMatch = storedOtp === givenOtp;
 
-  console.log("Stored OTP:", storedOtp, "| Given OTP:", givenOtp, "| Match:", isMatch);
-  
+  console.log(
+    "Stored OTP:",
+    storedOtp,
+    "| Given OTP:",
+    givenOtp,
+    "| Match:",
+    isMatch
+  );
+
   return isMatch;
 };
 
-
-  const artistSignup=async(req,res)=>{
-     const{name,email,phone,address,adharfront,adharback,eventcategories,city}=req.body;
-    const isUser=await Usermodel.findOne({phone});
-    if(isUser){
-      res.status(500).json({ error: 'Artist already registred' });
-    }
-    const Artist=new Usermodel({name:name,email:email,mobile:phone,role:"artist",address:address,adharfront:adharfront,adharback:adharback,isVerified:0,eventcategories,city})
-    await Artist.save();
-    res.status(201).json({status:true, message: 'Artist Signup successfully' });
-
+const artistSignup = async (req, res) => {
+  const {
+    name,
+    email,
+    phone,
+    address,
+    adharfront,
+    adharback,
+    eventcategories,
+    city,
+  } = req.body;
+  const isUser = await Usermodel.findOne({ phone });
+  if (isUser) {
+    res.status(500).json({ error: "Artist already registred" });
   }
+  const Artist = new Usermodel({
+    name: name,
+    email: email,
+    mobile: phone,
+    role: "artist",
+    address: address,
+    adharfront: adharfront,
+    adharback: adharback,
+    isVerified: 0,
+    eventcategories,
+    city,
+  });
+  await Artist.save();
+  res.status(201).json({ status: true, message: "Artist Signup successfully" });
+};
 
-
- const artistLogin = async (req, res) => {
+const artistLogin = async (req, res) => {
   try {
     const { email, otp } = req.body;
-     console.log("yash",otp,email)
-    const Artist = await Usermodel.findOne({ email }); 
+    console.log("yash", otp, email);
+    const Artist = await Usermodel.findOne({ email });
 
     if (!Artist) {
-      return res.status(404).json({ error: 'Email not registered' });
+      return res.status(404).json({ error: "Email not registered" });
     }
 
     if (Artist.isVerified === false) {
-      return res.status(403).json({ error: 'Verification under process' });
+      return res.status(403).json({ error: "Verification under process" });
     }
 
-    const isValid = await verifyOtp(otp, email); 
+    const isValid = await verifyOtp(otp, email);
 
     if (!isValid) {
-      return res.status(401).json({ error: 'Invalid OTP' });
+      return res.status(401).json({ error: "Invalid OTP" });
     }
 
     const token = jwt.sign(
       { userId: Artist._id, role: Artist.role },
       process.env.JWT_KEY,
-      { expiresIn: '7d' }
+      { expiresIn: "7d" }
     );
 
     return res.status(200).json({
       status: true,
-      message: 'Login successful',
+      message: "Login successful",
       token,
     });
-
   } catch (error) {
-    console.error('Login error:', error);
-    return res.status(500).json({ error: 'Server error' });
+    console.error("Login error:", error);
+    return res.status(500).json({ error: "Server error" });
   }
 };
-
 
 const AdminLogin = async (req, res) => {
   try {
     const { otp, email } = req.body;
 
-  
     const isValid = await verifyOtp(otp, email);
     if (!isValid) {
       return res.status(401).json({ error: "Invalid OTP" });
@@ -170,7 +180,9 @@ const AdminLogin = async (req, res) => {
 
     const admin = await Usermodel.findOne({ email, role: "admin" });
     if (!admin) {
-      return res.status(404).json({ error: "User does not exist or is not an admin" });
+      return res
+        .status(404)
+        .json({ error: "User does not exist or is not an admin" });
     }
 
     const token = jwt.sign(
@@ -181,12 +193,11 @@ const AdminLogin = async (req, res) => {
 
     await OtpModel.deleteMany({ email });
 
-   
     return res.status(200).json({
       status: true,
       message: "Login successful",
       token,
-      admin, 
+      admin,
     });
   } catch (error) {
     console.error("Admin login error:", error);
@@ -194,4 +205,11 @@ const AdminLogin = async (req, res) => {
   }
 };
 
-  module.exports = { signupUser,sendOTP,login,artistSignup,artistLogin,AdminLogin };
+module.exports = {
+  signupUser,
+  sendOTP,
+  login,
+  artistSignup,
+  artistLogin,
+  AdminLogin,
+};
