@@ -4,6 +4,7 @@ const sendmail=require("../../utils/mail")
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const User = require('../../models/User');
+require('dotenv').config();
 
 const signupUser = async (req, res) => {
     const { name, email, mobile, otp,city } = req.body;
@@ -174,7 +175,7 @@ const AdminLogin = async (req, res) => {
 
     const token = jwt.sign(
       { userId: admin._id, role: admin.role },
-      process.env.JWT_KEY,
+      process.env.jwt_key,
       { expiresIn: "7d" }
     );
 
