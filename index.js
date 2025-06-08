@@ -14,6 +14,8 @@ const allowedOrigins = [
   "https://www.gigzi.in",
   "https://gigziadmin.netlify.app",
   "https://gigzi.in",
+  "https://admin.gigzi.in",
+  "https://www.admin.gigzi.in",
   "exp://",
   "http://192.168"
 ];
