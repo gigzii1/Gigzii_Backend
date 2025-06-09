@@ -38,6 +38,7 @@ const authroutes = require('./routes/V3/Authroute');
 const adminEvent = require("./routes/Admin/EventRoute");
 const adminArtist = require("./routes/Admin/ArtistRoute");
 const adminDashboard = require("./routes/Admin/DashBoardRoute");
+const adminUsers=require("./routes/Admin/UserRoute")
 const booking = require("./routes/Client/bookingRoute");
 const Artistslots = require("./routes/Artist/slotsRoutes");
 const order = require("./routes/Client/OrderRoute");
@@ -47,6 +48,7 @@ app.use('/v3/auth/', authroutes);
 app.use('/admin/eventCat/', adminEvent);
 app.use('/admin/artist/', adminArtist);
 app.use('/admin/dashBoard/', adminDashboard);
+app.use('/admin/users/', adminUsers);
 app.use('/client/booking/', booking);
 app.use('/artist/addSlots/', Artistslots);
 app.use('/client/order/', order);
