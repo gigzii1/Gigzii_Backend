@@ -63,8 +63,7 @@ const login = async (req, res) => {
 
   const token = jwt.sign(
     { userId: user._id, role: user.role, userdata: user },
-    process.env.JWT_KEY,
-    { expiresIn: "7d" }
+    process.env.JWT_KEY
   );
 
   await OtpModel.deleteMany({ email });
@@ -89,14 +88,8 @@ const verifyOtp = async (otp, email) => {
   const givenOtp = String(otp).trim();
   const isMatch = storedOtp === givenOtp;
 
-  console.log(
-    "Stored OTP:",
-    storedOtp,
-    "| Given OTP:",
-    givenOtp,
-    "| Match:",
-    isMatch
-  );
+  console.log("DB OTP:", existOtp.otp, typeof existOtp.otp);
+  console.log("User OTP:", otp, typeof otp);
 
   return isMatch;
 };
@@ -154,8 +147,7 @@ const artistLogin = async (req, res) => {
 
     const token = jwt.sign(
       { userId: Artist._id, role: Artist.role },
-      process.env.JWT_KEY,
-      { expiresIn: "7d" }
+      process.env.JWT_KEY
     );
 
     return res.status(200).json({
@@ -187,8 +179,7 @@ const AdminLogin = async (req, res) => {
 
     const token = jwt.sign(
       { userId: admin._id, role: admin.role },
-      process.env.jwt_key,
-      { expiresIn: "7d" }
+      process.env.jwt_key
     );
 
     await OtpModel.deleteMany({ email });

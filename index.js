@@ -40,11 +40,11 @@ const adminArtist = require("./routes/Admin/ArtistRoute");
 const adminDashboard = require("./routes/Admin/DashBoardRoute");
 const adminUsers=require("./routes/Admin/UserRoute")
 const adminOrders=require("./routes/Admin/OrderRoute")
+const adminWallet=require("./routes/Admin/WalletRoute")
 const booking = require("./routes/Client/bookingRoute");
 const Artistslots = require("./routes/Artist/slotsRoutes");
 const order = require("./routes/Client/OrderRoute");
 const ArtistOrder = require("./routes/Artist/ArtistOrderRoute");
-
 
 //Common Routes
 app.use('/v3/auth/', authroutes);
@@ -55,6 +55,7 @@ app.use('/admin/artist/', adminArtist);
 app.use('/admin/dashBoard/', adminDashboard);
 app.use('/admin/users/', adminUsers);
 app.use('/admin/orders/', adminOrders);
+app.use('/admin/wallet/', adminWallet);
 
 
 // Client Routes

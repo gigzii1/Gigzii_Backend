@@ -25,6 +25,10 @@ const orderSchema = new mongoose.Schema(
       enum: ["paid", "unpaid"],
       default: "unpaid",
     },
+    eventCategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Eventcategory",
+    },
     status: {
       type: String,
       enum: [
