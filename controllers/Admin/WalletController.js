@@ -43,4 +43,17 @@ const getWallets = async (req, res) => {
   }
 };
 
-module.exports = { getWallets };
+const getTransactions = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const wallets = await WalletModel.findById(id)
+      .populate("artistId")
+      .sort({ updatedAt: -1 });
+
+    return res.status(200).json({
+      status: true,
+      wallets,
+    });
+  } catch (error) {}
+};
+module.exports = { getWallets, getTransactions };
