@@ -107,7 +107,9 @@ const markOrderComplete = async (req, res) => {
 
     const order = await OrderModel.findById(orderId);
     if (!order) return res.status(404).json({ message: "Order not found" });
+    order.mark_completed_by_user = true;
 
+    await order.save();
     const eventCategory = await EventModel.findById(order.eventCategory);
     if (!eventCategory)
       return res.status(404).json({ message: "Event category not found" });

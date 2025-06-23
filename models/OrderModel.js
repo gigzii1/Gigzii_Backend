@@ -42,6 +42,10 @@ const orderSchema = new mongoose.Schema(
       default: "pending",
     },
     amount: { type: Number, required: true },
+    mark_completed_by_user: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
