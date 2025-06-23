@@ -32,9 +32,14 @@ const editCategory = async (req, res) => {
     const { id } = req.params;
     const { name, image, fees, commisonPercentage } = req.body;
 
+    let commission;
+    if (fees != null && commisonPercentage != null) {
+      commission = (commisonPercentage / 100) * fees;
+    }
+
     const updatedCategory = await EventCategoryModel.findByIdAndUpdate(
       id,
-      { name, image, fees, commisonPercentage },
+      { name, image, fees, commisonPercentage, commission },
       { new: true }
     );
 
@@ -72,4 +77,9 @@ const getCategories = async (req, res) => {
   }
 };
 
-module.exports = { createEventCategory, getCategories, getSingleCategory,editCategory };
+module.exports = {
+  createEventCategory,
+  getCategories,
+  getSingleCategory,
+  editCategory,
+};
