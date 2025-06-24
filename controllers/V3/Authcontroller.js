@@ -179,7 +179,7 @@ const AdminLogin = async (req, res) => {
 
     const token = jwt.sign(
       { userId: admin._id, role: admin.role },
-      process.env.jwt_key
+      process.env.JWT_KEY
     );
 
     await OtpModel.deleteMany({ email });
