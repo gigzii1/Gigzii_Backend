@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 
 dotenv.config();
-const jwt_key = process.env.jwt_key;
+const JWT_KEY = process.env.JWT_KEY;
 const verifyToken = (req, res, next) => {
   let token = req.headers.authorization;
   console.log("ratta",token)
@@ -15,7 +15,7 @@ const verifyToken = (req, res, next) => {
 
   token = token.split(" ")[1];
 
-  jwt.verify(token, jwt_key, (err, valid) => {
+  jwt.verify(token, JWT_KEY, (err, valid) => {
     if (err) {
       return res.status(401).json({
         data: { status: false, msg: "Unauthorized - Invalid Token" },
